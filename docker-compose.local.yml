@@ -1,34 +1,43 @@
 version: "3.7"
-name: phapi-core-li
+name: badminton-booking-alarm
 
 services:
-  # primary
-  phapi-li-mongo-primary:
-    image: mongo:4.0
-    restart: always
-    hostname: phapi-li-mongo-primary
-    container_name: phapi-li-mongo-primary
-    command: mongod --noauth --replSet rs0 --bind_ip_all
+  badminton-booking-alarm-dynamodb-local:
+    image: amazon/dynamodb-local
+    container_name: badminton-booking-alarm-dynamodb-local
+    command:
+      [
+        "-jar",
+        "DynamoDBLocal.jar",
+        "-sharedDb",
+        "-optimizeDbBeforeStartup",
+        "-dbPath",
+        "/data/dynamodb"
+      ]
     volumes:
-      - ./db/mongo:/scripts
+      - ./data/dynamodb:/data/dynamodb
     ports:
-      - 24110:27017
+      - $DYNAMODB_PORT:8000
 
-  # secondary
-  phapi-li-mongo-secondary:
-    image: mongo:4.0
-    hostname: phapi-li-mongo-secondary
-    container_name: phapi-li-mongo-secondary
-    command: mongod --noauth --replSet rs0 --bind_ip_all
+  badminton-booking-alarm-dynamodb-admin:
+    platform: linux/amd64
+    image: badminton-booking-alarm-dynamodb-admin
+    container_name: badminton-booking-alarm-dynamodb-admin
+    environment:
+      - AWS_REGION=ap-southeast-2
+      - DYNAMO_ENDPOINT=http://badminton-booking-alarm-dynamodb-local:8000
+      - DYNAMO_ADMIN_UI_PORT
+    build:
+      context: ./infra/dynamodbAdmin
     ports:
-      - 24111:27017
+      - $DYNAMO_ADMIN_UI_PORT:3500
 
   # repository name must be lowercase
-  phapi-core-li-event-bridge:
+  badminton-booking-alarm-event-bridge:
     platform: linux/amd64
-    image: phapi-core-li-event-bridge
-    container_name: phapi-core-li-event-bridge
+    image: badminton-booking-alarm-event-bridge
+    container_name: badminton-booking-alarm-event-bridge
     build:
       context: ./infra/eventBridge
     ports:
-      - 8144:5208
+      - 5618:5208

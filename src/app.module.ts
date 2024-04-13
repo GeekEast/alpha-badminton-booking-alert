@@ -2,10 +2,12 @@ import { ApolloFederationDriver, ApolloFederationDriverConfig } from "@nestjs/ap
 import { MiddlewareConsumer, Module } from "@nestjs/common"
 import { GraphQLModule } from "@nestjs/graphql"
 import { ClsModule, ClsService } from "nestjs-cls"
+import { DynamooseModule } from "nestjs-dynamoose"
 
 import { AppController } from "./app.controller"
 import { generateApolloFederationConfig } from "./common/apollo/federation/generateApolloFederationConfig"
 import { initClsStoreInMiddleware } from "./common/cls/initClsStoreInMiddleware"
+import { generateDynamooseConfig } from "./common/dynamoose/generateDynamooseConfig"
 import { GraphQLModules, RestfulModules } from "./modules"
 import { GLOBAL_CONFIG_PROVIDER } from "./providers/config/global.config"
 import { ContextFactory } from "./providers/context/context.factory"
@@ -25,6 +27,10 @@ import { GlobalModules, globalProviders } from "./providers/global.provider"
       global: true,
       useFactory: initClsStoreInMiddleware,
       inject: [ContextFactory]
+    }),
+    DynamooseModule.forRootAsync({
+      useFactory: generateDynamooseConfig,
+      inject: [GLOBAL_CONFIG_PROVIDER]
     })
   ],
   controllers: [AppController],

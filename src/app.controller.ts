@@ -4,6 +4,6 @@ import { Controller, Get } from "@nestjs/common"
 export class AppController {
   @Get("/")
   async healthCheck(): Promise<string> {
-    return "Welcome to Core-LI Service."
+    return "Welcome to Badminton Booking Alarm Service."
   }
 }

@@ -1,4 +1,4 @@
-service: phapi-core-li
+service: badminton-booking-alarm
 
 frameworkVersion: "3"
 
@@ -8,7 +8,7 @@ plugins:
 
 provider:
   name: aws
-  runtime: nodejs20.x
+  runtime: nodejs18.x
   region: ap-southeast-2
   stage: local
   lambdaHashingVersion: 20201221
@@ -33,7 +33,7 @@ functions:
     handler: index.consume # logging the event for debug
     events:
       - eventBridge:
-          eventBus: local-ph-event-bus
+          eventBus: local-bb-event-bus
           pattern:
             source:
-              - com.predictivehire.li
+              - com.badminton-booking.alpha

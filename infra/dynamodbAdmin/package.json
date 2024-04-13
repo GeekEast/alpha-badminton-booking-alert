@@ -1,0 +1,20 @@
+{
+    "name": "badminton-booking-alarm-serverless",
+    "version": "1.0.0",
+    "description": "The eventBridge listener for badminton-booking-alarm event",
+    "main": "index.js",
+    "scripts": {
+      "start": "dynamodb-admin --open --port 3500 && echo DynamoDB Admin is running on http://localhost:$DYNAMO_ADMIN_UI_PORT"
+    },
+    "author": "james@sapia.ai",
+    "license": "ISC",
+    "dependencies": {
+      "dynamodb-admin": "^4.6.1",
+      "env-cmd": "^10.1.0"
+    },
+    "volta": {
+      "node": "18.19.0",
+      "npm": "10.2.3",
+      "pnpm": "8.11.0"
+    }
+  }
