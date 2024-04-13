@@ -23,9 +23,9 @@ async function bootstrap() {
   const config = app.get<typeof GLOBAL_CONFIG>(GLOBAL_CONFIG_PROVIDER)
   await app.listen(config.PORT, async () => {
     const url = await app.getUrl()
-    Logger.log(`🚀 LI service starts in ${config.STAGE} stage in ${config.NODE_ENV} mode`, "main.bootstrap")
-    Logger.log(`🚀 LI restful endpoint ${url}`, "main.bootstrap")
-    Logger.log(`🚀 LI graphql endpoint ${url}${config.GRAPHQL_PATH}`, "main.bootstrap")
+    Logger.log(`🚀 BBA service starts in ${config.STAGE} stage in ${config.NODE_ENV} mode`, "main.bootstrap")
+    Logger.log(`🚀 BBA restful endpoint ${url}`, "main.bootstrap")
+    Logger.log(`🚀 BBA graphql endpoint ${url}${config.GRAPHQL_PATH}`, "main.bootstrap")
   })
 }
 

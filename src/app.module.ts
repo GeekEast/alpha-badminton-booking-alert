@@ -1,6 +1,7 @@
 import { ApolloFederationDriver, ApolloFederationDriverConfig } from "@nestjs/apollo"
 import { MiddlewareConsumer, Module } from "@nestjs/common"
 import { GraphQLModule } from "@nestjs/graphql"
+import { ScheduleModule } from "@nestjs/schedule"
 import { ClsModule, ClsService } from "nestjs-cls"
 import { DynamooseModule } from "nestjs-dynamoose"
 
@@ -8,7 +9,7 @@ import { AppController } from "./app.controller"
 import { generateApolloFederationConfig } from "./common/apollo/federation/generateApolloFederationConfig"
 import { initClsStoreInMiddleware } from "./common/cls/initClsStoreInMiddleware"
 import { generateDynamooseConfig } from "./common/dynamoose/generateDynamooseConfig"
-import { GraphQLModules, RestfulModules } from "./modules"
+import { GraphQLModules, RestfulModules, ScheduleModules } from "./modules"
 import { GLOBAL_CONFIG_PROVIDER } from "./providers/config/global.config"
 import { ContextFactory } from "./providers/context/context.factory"
 import { GlobalModules, globalProviders } from "./providers/global.provider"
@@ -18,6 +19,7 @@ import { GlobalModules, globalProviders } from "./providers/global.provider"
     ...GlobalModules,
     ...GraphQLModules,
     ...RestfulModules,
+    ...ScheduleModules,
     GraphQLModule.forRootAsync<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
       useFactory: generateApolloFederationConfig,
@@ -31,7 +33,8 @@ import { GlobalModules, globalProviders } from "./providers/global.provider"
     DynamooseModule.forRootAsync({
       useFactory: generateDynamooseConfig,
       inject: [GLOBAL_CONFIG_PROVIDER]
-    })
+    }),
+    ScheduleModule.forRoot()
   ],
   controllers: [AppController],
   providers: globalProviders
