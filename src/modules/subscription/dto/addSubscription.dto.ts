@@ -14,7 +14,7 @@ export class AddSubscriptionDto {
   })
   @IsDate()
   @Expose()
-  start: string
+  start: Date
 
   @Field()
   @Transform(({ obj }) => {
@@ -22,7 +22,7 @@ export class AddSubscriptionDto {
   })
   @IsDate()
   @Expose()
-  end: string
+  end: Date
 
   @Field(() => AddUserDto)
   @ValidateNested()

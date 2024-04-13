@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common"
+import { v4 as uuid } from "uuid"
 
 import { instantiate } from "../../common/pipe/instantiate.pipe"
 import { AddSubscriptionDto } from "./dto/addSubscription.dto"
@@ -17,7 +18,15 @@ export class SubscriptionService {
   ) {}
 
   async createSubscription(addSubscriptionDto: AddSubscriptionDto): Promise<SubscriptionEntity> {
-    return
+    const object = await this.subscriptionRepo.createSubscription({
+      id: uuid(),
+      start: addSubscriptionDto.start,
+      end: addSubscriptionDto.end,
+      user: { ...addSubscriptionDto.user },
+      tags: addSubscriptionDto.tags
+    })
+
+    return instantiate({ id: object.PK, ...object }, SubscriptionEntity)
   }
 
   async updateSubscription(
@@ -32,8 +41,8 @@ export class SubscriptionService {
   }
 
   async getSubscription(filter: FilterGetSubscriptionDto): Promise<SubscriptionEntity> {
-    const subscriptionObject = await this.subscriptionRepo.getSubscriptionById(filter.id)
-    return instantiate({ id: subscriptionObject.PK, ...subscriptionObject }, SubscriptionEntity)
+    const object = await this.subscriptionRepo.getSubscriptionById(filter.id)
+    return instantiate({ id: object.PK, ...object }, SubscriptionEntity)
   }
 
   async getSubscriptions(filter: FilterGetSubscriptionsDto): Promise<SubscriptionEntity[]> {

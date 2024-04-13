@@ -19,7 +19,7 @@ export class SubscriptionRepo {
   ) {}
 
   async createSubscription(subscriptionToCreate: ICreateSubscription): Promise<ISubscription> {
-    const existSubscription: ISubscription = await this.getSubscriptionById(`${subscriptionToCreate.id}#v2`)
+    const existSubscription: ISubscription = await this.getSubscriptionById(`${subscriptionToCreate.id}`)
     if (existSubscription && !existSubscription.archivedAt) {
       throw new ForbiddenException(`subscription exists (active)`)
     }
@@ -29,7 +29,7 @@ export class SubscriptionRepo {
 
     const currentDate = new Date()
     const subscriptionToInject: ISubscription = {
-      PK: `${subscriptionToCreate.id}#v2`,
+      PK: `${subscriptionToCreate.id}`,
       start: subscriptionToCreate.start,
       end: subscriptionToCreate.end,
       user: subscriptionToCreate.user,

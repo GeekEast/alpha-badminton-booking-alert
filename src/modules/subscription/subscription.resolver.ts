@@ -1,6 +1,7 @@
-import { Args, Query, Resolver } from "@nestjs/graphql"
+import { Args, Mutation, Query, Resolver } from "@nestjs/graphql"
 
 import { buildGqlNameWithPrefix } from "../../common/utils/buildGqlName.util"
+import { AddSubscriptionDto } from "./dto/addSubscription.dto"
 import { FilterGetSubscriptionDto } from "./dto/filterGetSubscription.dto"
 import { SubscriptionEntity } from "./entity/subscription.entity"
 import { SubscriptionService } from "./subscription.service"
@@ -9,10 +10,10 @@ import { SubscriptionService } from "./subscription.service"
 export class SubscriptionResolver {
   constructor(private readonly subscriptionService: SubscriptionService) {}
 
-  // @Mutation(() => SubscriptionEntity, { name: buildGqlNameWithPrefix("addSubscription") })
-  // async addSubscription(@Args("subscription") addSubscriptionDto: AddSubscriptionDto): Promise<SubscriptionEntity> {
-  //   return
-  // }
+  @Mutation(() => SubscriptionEntity, { name: buildGqlNameWithPrefix("addSubscription") })
+  async addSubscription(@Args("subscription") addSubscriptionDto: AddSubscriptionDto): Promise<SubscriptionEntity> {
+    return this.subscriptionService.createSubscription(addSubscriptionDto)
+  }
 
   @Query(() => SubscriptionEntity, {
     name: buildGqlNameWithPrefix("getSubscription"),
