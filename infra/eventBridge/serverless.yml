@@ -1,0 +1,39 @@
+service: phapi-core-li
+
+frameworkVersion: "3"
+
+plugins:
+  - serverless-offline
+  - serverless-offline-aws-eventbridge
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-southeast-2
+  stage: local
+  lambdaHashingVersion: 20201221
+  environment:
+    STAGE: local
+    REGION: ap-southeast-2
+    NODE_ENV: development
+
+custom:
+  serverless-offline:
+    noPrependStageInUrl: true
+    lambdaPort: 3008
+    httpPort: 3088 # ! local graphql port
+  serverless-offline-aws-eventbridge:
+    port: 5208 # ! send event to this http://localhost:5208
+    debug: true # flag to show debug messages
+    account: "local" # account id that gets passed to the event
+    pubSubPort: 4018
+
+functions:
+  consumeEvent:
+    handler: index.consume # logging the event for debug
+    events:
+      - eventBridge:
+          eventBus: local-ph-event-bus
+          pattern:
+            source:
+              - com.predictivehire.li

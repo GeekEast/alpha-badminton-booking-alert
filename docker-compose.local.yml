@@ -1,0 +1,34 @@
+version: "3.7"
+name: phapi-core-li
+
+services:
+  # primary
+  phapi-li-mongo-primary:
+    image: mongo:4.0
+    restart: always
+    hostname: phapi-li-mongo-primary
+    container_name: phapi-li-mongo-primary
+    command: mongod --noauth --replSet rs0 --bind_ip_all
+    volumes:
+      - ./db/mongo:/scripts
+    ports:
+      - 24110:27017
+
+  # secondary
+  phapi-li-mongo-secondary:
+    image: mongo:4.0
+    hostname: phapi-li-mongo-secondary
+    container_name: phapi-li-mongo-secondary
+    command: mongod --noauth --replSet rs0 --bind_ip_all
+    ports:
+      - 24111:27017
+
+  # repository name must be lowercase
+  phapi-core-li-event-bridge:
+    platform: linux/amd64
+    image: phapi-core-li-event-bridge
+    container_name: phapi-core-li-event-bridge
+    build:
+      context: ./infra/eventBridge
+    ports:
+      - 8144:5208

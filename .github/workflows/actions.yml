@@ -1,0 +1,55 @@
+name: Github Actions
+
+on: [pull_request]
+
+jobs:
+  rebase-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Rebase before merging?
+        uses: cyberark/enforce-rebase@v2
+        with:
+          default-branch: ${{ github.base_ref }}
+  unit-test:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    container: predictivehireadmin/node-volta
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Run unit tests
+        run: pnpm test
+      - name: Jest Lcov Reporter
+        uses: vebr/jest-lcov-reporter@v0.2.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          lcov-file: ./coverage/lcov.info
+  # e2e-test:
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: predictivehireadmin/node-volta
+  #     env:
+  #       # necessary for setup dynamooose in docker ci e2e tests
+  #       AWS_REGION: ap-southeast-2
+  #       AWS_ACCESS_KEY_ID: local
+  #       AWS_SECRET_ACCESS_KEY: local
+  #   steps:
+  #     - name: Checkout current branch
+  #       uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
+  #     - name: Install dependencies
+  #       run: pnpm install --frozen-lockfile
+  #     - name: Create e2e Stack
+  #       run: pnpm cmd up
+  #     - name: Run End-To-End tests
+  #       run: pnpm e2e

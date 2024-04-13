@@ -1,0 +1,341 @@
+steps:
+  - label: 'Run unit tests'
+    command:
+      - "pnpm install --frozen-lockfile"
+      - "pnpm test"
+    plugins:
+      - docker#v3.3.0:
+          image: 'predictivehireadmin/node-volta'
+          volumes:
+            - "$HOME/.aws:/root/.aws:ro"
+    agents:
+      queue: "new-infra-medium-instance"
+
+  - wait
+
+  # - block: "Publish ECR"
+  #   blocked_state: "running"
+  # - label: ":shipit: Publish a new version"
+  #   command:
+  #     - curl -o ./.buildkite/docker.publish https://raw.githubusercontent.com/PredictiveHire/sapia-public-scripts/main/scripts/cicd/ecr/image.publish.sh
+  #     - chmod +x .buildkite/docker.publish && .buildkite/docker.publish -n phapi-core-li -i '${BUILDKITE_BUILD_NUMBER}' -u 174623324848.dkr.ecr.ap-southeast-2.amazonaws.com/phapi/core-li
+  #   plugins:
+  #     - ecr#v2.5.0: # login into ecr before running any command
+  #         login: true
+  #         account_ids: "174623324848"
+  #         region: "ap-southeast-2"
+  #   env:
+  #     AWS_PROFILE: "infra-qa" # for ecr plugin to login
+  #   agents:
+  #     queue: new-infra-medium-instance
+
+  # - wait
+
+  # # -------------------------------------------- dev stage --------------------------------------------
+  # - block: "Publish Schema to Dev Registry"
+  #   blocked_state: "running"
+  #   fields:
+  #     - select: "Regions"
+  #       key: "publish-schema-regions-dev"
+  #       hint: "Which regions should we publish schema to? :earth_asia:"
+  #       multiple: true
+  #       options:
+  #         - label: "Sydney"
+  #           value: "ap-southeast-2"
+
+  # - wait
+
+  # - label: ":peacock: Publish GraphQL Schema"
+  #   plugins:
+  #     - docker#v3.3.0:
+  #         image: "predictivehireadmin/node-volta"
+  #         volumes:
+  #           - "$HOME/.aws:/root/.aws:ro"
+  #         environment:
+  #           - "APOLLO_KEY"
+  #           - "APOLLO_TELEMETRY_DISABLED"
+  #   command:
+  #     - curl -o ./.buildkite/schema.publish  https://raw.githubusercontent.com/PredictiveHire/sapia-public-scripts/main/scripts/cicd/apollo/schema.publish.sh
+  #     - chmod +x ./.buildkite/schema.publish && ./.buildkite/schema.publish -t dev -s phapi-core-li -p ph-phapi-core-li
+  #   agents:
+  #     queue: "new-infra-medium-instance"
+
+  # - wait
+
+  # - block: "Publish with Dev Tag"
+  #   blocked_state: "running"
+  # - label: ":shipit: Publish a new version with dev tag"
+  #   command:
+  #     - curl -o ./.buildkite/docker-stage.publish https://raw.githubusercontent.com/PredictiveHire/sapia-public-scripts/main/scripts/cicd/ecr/image.stage.publish.sh
+  #     - chmod +x .buildkite/docker-stage.publish && .buildkite/docker-stage.publish -s dev -n phapi/core-li -i '${BUILDKITE_BUILD_NUMBER}'
+  #   plugins:
+  #     - ecr#v2.5.0: # login into ecr before running any command
+  #         login: true
+  #         account_ids: "174623324848"
+  #         region: "ap-southeast-2"
+  #   env:
+  #     AWS_PROFILE: "infra-qa" # for ecr plugin to login
+  #   agents:
+  #     queue: "new-infra-medium-instance"
+
+  # - wait
+
+  # - block: "Deploy to Dev ECS"
+  #   blocked_state: "running"
+  #   fields:
+  #     - select: "Regions"
+  #       key: "deploy-regions-dev"
+  #       hint: "Which regions should we deploy this to? :earth_asia:"
+  #       multiple: true
+  #       options:
+  #         - label: "Sydney"
+  #           value: "ap-southeast-2"
+
+  # - wait
+
+  # - label: ":rocket: Deploy to dev environment"
+  #   command:
+  #     - curl -o ./.buildkite/ecs-deploy https://raw.githubusercontent.com/PredictiveHire/sapia-public-scripts/main/scripts/cicd/ecs/deploy.sh
+  #     - curl -o ./.buildkite/deploy https://raw.githubusercontent.com/PredictiveHire/sapia-public-scripts/main/scripts/cicd/ecs/trigger.deploy.sh
+  #     - chmod +x ./.buildkite/deploy && ./.buildkite/deploy -n li -t dev -u 174623324848.dkr.ecr.ap-southeast-2.amazonaws.com/phapi/core-li
+  #   agents:
+  #     queue: "new-infra-medium-instance"
+
+  # - wait
+
+  # # -------------------------------------------- qa stage --------------------------------------------
+  # - block: "Publish Schema to QA Registry"
+  #   blocked_state: "running"
+  #   fields:
+  #     - select: "Regions"
+  #       key: "publish-schema-regions-qa"
+  #       hint: "Which regions should we publish schema to? :earth_asia:"
+  #       multiple: true
+  #       options:
+  #         - label: "Sydney"
+  #           value: "ap-southeast-2"
+  #         - label: "Ireland"
+  #           value: "eu-west-1"
+
+  # - wait
+
+  # - label: ":peacock: Publish GraphQL Schema"
+  #   plugins:
+  #     - docker#v3.3.0:
+  #         image: 'predictivehireadmin/node-volta'
+  #         volumes:
+  #           - "$HOME/.aws:/root/.aws:ro"
+  #         environment:
+  #           - "APOLLO_KEY"
+  #           - "APOLLO_TELEMETRY_DISABLED"
+  #   command:
+  #     - curl -o ./.buildkite/schema.publish  https://raw.githubusercontent.com/PredictiveHire/sapia-public-scripts/main/scripts/cicd/apollo/schema.publish.sh
+  #     - chmod +x ./.buildkite/schema.publish && ./.buildkite/schema.publish -t qa -s phapi-core-li -p ph-phapi-core-li
+  #   agents:
+  #     queue: "new-infra-medium-instance"
+
+  # - wait
+
+  # - block: "Publish with QA Tag"
+  #   blocked_state: "running"
+  # - label: ":shipit: Publish a new version with qa tag"
+  #   command:
+  #     - curl -o ./.buildkite/docker-stage.publish https://raw.githubusercontent.com/PredictiveHire/sapia-public-scripts/main/scripts/cicd/ecr/image.stage.publish.sh
+  #     - chmod +x .buildkite/docker-stage.publish && .buildkite/docker-stage.publish -s qa -n phapi/core-li -i '${BUILDKITE_BUILD_NUMBER}'
+  #   plugins:
+  #     - ecr#v2.5.0: # login into ecr before running any command
+  #         login: true
+  #         account_ids: "174623324848"
+  #         region: "ap-southeast-2"
+  #   env:
+  #     AWS_PROFILE: "infra-qa" # for ecr plugin to login
+  #   agents:
+  #     queue: "new-infra-medium-instance"
+
+  # - wait
+
+  # - block: "Deploy to QA ECS"
+  #   blocked_state: "running"
+  #   fields:
+  #     - select: "Regions"
+  #       key: "deploy-regions-qa"
+  #       hint: "Which regions should we deploy this to? :earth_asia:"
+  #       multiple: true
+  #       options:
+  #         - label: "Sydney"
+  #           value: "ap-southeast-2"
+  #         - label: "Ireland"
+  #           value: "eu-west-1"
+
+  # - wait
+
+  # - label: ":rocket: Deploy to qa environment"
+  #   command:
+  #     - curl -o ./.buildkite/ecs-deploy https://raw.githubusercontent.com/PredictiveHire/sapia-public-scripts/main/scripts/cicd/ecs/deploy.sh
+  #     - curl -o ./.buildkite/deploy https://raw.githubusercontent.com/PredictiveHire/sapia-public-scripts/main/scripts/cicd/ecs/trigger.deploy.sh
+  #     - chmod +x ./.buildkite/deploy && ./.buildkite/deploy -n li -t qa -u 174623324848.dkr.ecr.ap-southeast-2.amazonaws.com/phapi/core-li
+  #   agents:
+  #     queue: "new-infra-medium-instance"
+
+  # - wait
+  # # -------------------------------------------- sandbox stage --------------------------------------------
+  # - block: "Publish Schema to Sandbox Registry"
+  #   blocked_state: "running"
+  #   fields:
+  #     - select: "Regions"
+  #       key: "publish-schema-regions-sandbox"
+  #       hint: "Which regions should we publish schema to? :earth_asia:"
+  #       multiple: true
+  #       options:
+  #         - label: "Sydney"
+  #           value: "ap-southeast-2"
+  #         - label: "Ireland"
+  #           value: "eu-west-1"
+
+  # - wait
+
+  # - label: ":peacock: Publish GraphQL Schema"
+  #   plugins:
+  #     - docker#v3.3.0:
+  #         image: 'predictivehireadmin/node-volta'
+  #         volumes:
+  #           - "$HOME/.aws:/root/.aws:ro"
+  #         environment:
+  #           - "APOLLO_KEY"
+  #           - "APOLLO_TELEMETRY_DISABLED"
+  #   command:
+  #     - curl -o ./.buildkite/schema.publish  https://raw.githubusercontent.com/PredictiveHire/sapia-public-scripts/main/scripts/cicd/apollo/schema.publish.sh
+  #     - chmod +x ./.buildkite/schema.publish && ./.buildkite/schema.publish -t sandbox -s phapi-core-li -p ph-phapi-core-li
+  #   agents:
+  #     queue: "new-infra-medium-instance"
+
+  # - wait
+
+  # - block: "Publish with Sandbox Tag"
+  #   blocked_state: "running"
+  # - label: ":shipit: Publish a new version with sandbox tag"
+  #   command:
+  #     - curl -o ./.buildkite/docker-stage.publish https://raw.githubusercontent.com/PredictiveHire/sapia-public-scripts/main/scripts/cicd/ecr/image.stage.publish.sh
+  #     - chmod +x .buildkite/docker-stage.publish && .buildkite/docker-stage.publish -s sandbox -n phapi/core-li -i '${BUILDKITE_BUILD_NUMBER}'
+  #   plugins:
+  #     - ecr#v2.5.0: # login into ecr before running any command
+  #         login: true
+  #         account_ids: "174623324848"
+  #         region: "ap-southeast-2"
+  #   env:
+  #     AWS_PROFILE: "infra-qa" # for ecr plugin to login
+  #   agents:
+  #     queue: "new-infra-medium-instance"
+
+  # - wait
+
+  # - block: "Deploy to Sandbox ECS"
+  #   blocked_state: "running"
+  #   fields:
+  #     - select: "Regions"
+  #       key: "deploy-regions-sandbox"
+  #       hint: "Which regions should we deploy this to? :earth_asia:"
+  #       multiple: true
+  #       options:
+  #         - label: "Sydney"
+  #           value: "ap-southeast-2"
+  #         - label: "Ireland"
+  #           value: "eu-west-1"
+
+  # - wait
+
+  # - label: ":rocket: Deploy to sandbox environment"
+  #   command:
+  #     - curl -o ./.buildkite/ecs-deploy https://raw.githubusercontent.com/PredictiveHire/sapia-public-scripts/main/scripts/cicd/ecs/deploy.sh
+  #     - curl -o ./.buildkite/deploy https://raw.githubusercontent.com/PredictiveHire/sapia-public-scripts/main/scripts/cicd/ecs/trigger.deploy.sh
+  #     - chmod +x ./.buildkite/deploy && ./.buildkite/deploy -n li -t sandbox -u 174623324848.dkr.ecr.ap-southeast-2.amazonaws.com/phapi/core-li
+  #   agents:
+  #     queue: "new-infra-medium-instance"
+
+  # - wait
+
+  # # -------------------------------------------- product stage --------------------------------------------
+  # - block: "Publish Schema to Product Registry"
+  #   branches: "main"
+  #   blocked_state: "running"
+  #   fields:
+  #     - select: "Regions"
+  #       key: "publish-schema-regions-product"
+  #       hint: "Which regions should we publish schema to? :earth_asia:"
+  #       multiple: true
+  #       options:
+  #         - label: "Sydney"
+  #           value: "ap-southeast-2"
+  #         - label: "Ireland"
+  #           value: "eu-west-1"
+  #         - label: "Virginia"
+  #           value: "us-east-1"
+
+  # - wait
+
+  # - label: ":peacock: Publish GraphQL Schema"
+  #   branches: "main"
+  #   plugins:
+  #     - docker#v3.3.0:
+  #         image: 'predictivehireadmin/node-volta'
+  #         volumes:
+  #           - "$HOME/.aws:/root/.aws:ro"
+  #         environment:
+  #           - "APOLLO_KEY"
+  #           - "APOLLO_TELEMETRY_DISABLED"
+  #   command:
+  #     - curl -o ./.buildkite/schema.publish  https://raw.githubusercontent.com/PredictiveHire/sapia-public-scripts/main/scripts/cicd/apollo/schema.publish.sh
+  #     - chmod +x ./.buildkite/schema.publish && ./.buildkite/schema.publish -t product -s phapi-core-li -p ph-phapi-core-li
+  #   agents:
+  #     queue: "new-infra-medium-instance"
+
+  # - wait
+
+  # - block: "Publish with Product Tag"
+  #   branches: "main"
+  #   blocked_state: "running"
+  # - label: ":shipit: Publish a new version with product tag"
+  #   branches: "main"
+  #   command:
+  #     - curl -o ./.buildkite/docker-stage.publish https://raw.githubusercontent.com/PredictiveHire/sapia-public-scripts/main/scripts/cicd/ecr/image.stage.publish.sh
+  #     - chmod +x .buildkite/docker-stage.publish && .buildkite/docker-stage.publish -s product -n phapi/core-li -i '${BUILDKITE_BUILD_NUMBER}'
+  #   plugins:
+  #     - ecr#v2.5.0: # login into ecr before running any command
+  #         login: true
+  #         account_ids: "174623324848"
+  #         region: "ap-southeast-2"
+  #   env:
+  #     AWS_PROFILE: "infra-qa" # for ecr plugin to login
+  #   agents:
+  #     queue: "new-infra-medium-instance"
+
+  # - wait
+
+  # - block: "Deploy to Product ECS"
+  #   branches: "main"
+  #   blocked_state: "running"
+  #   fields:
+  #     - select: "Regions"
+  #       key: "deploy-regions-product"
+  #       hint: "Which regions should we deploy this to? :earth_asia:"
+  #       multiple: true
+  #       options:
+  #         - label: "Sydney"
+  #           value: "ap-southeast-2"
+  #         - label: "Ireland"
+  #           value: "eu-west-1"
+  #         - label: "Virginia"
+  #           value: "us-east-1"
+
+  # - wait
+
+  # - label: ":rocket: Deploy to product environment"
+  #   branches: "main"
+  #   command:
+  #     - curl -o ./.buildkite/ecs-deploy https://raw.githubusercontent.com/PredictiveHire/sapia-public-scripts/main/scripts/cicd/ecs/deploy.sh
+  #     - curl -o ./.buildkite/deploy https://raw.githubusercontent.com/PredictiveHire/sapia-public-scripts/main/scripts/cicd/ecs/trigger.deploy.sh
+  #     - chmod +x ./.buildkite/deploy && ./.buildkite/deploy -n li -t product -u 174623324848.dkr.ecr.ap-southeast-2.amazonaws.com/phapi/core-li
+  #   agents:
+  #     queue: "new-infra-medium-instance"
+
+  # - wait

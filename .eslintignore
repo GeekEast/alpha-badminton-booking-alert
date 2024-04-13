@@ -1,0 +1,13 @@
+node_modules
+coverage
+dist
+*.lock
+*.log
+*.mjs
+local/**/*.js
+.eslintrc.js
+slsEventBridgeHandler.js
+localstack/**/*.js
+scripts/**/*.js
+infra/**
+*.d.ts

@@ -1,0 +1,22 @@
+{
+  "name": "phapi-core-li-serverless",
+  "version": "1.0.0",
+  "description": "The eventBridge listener for core-li events",
+  "main": "index.js",
+  "scripts": {
+    "start": "sls offline --config serverless.yml --reloadHandler"
+  },
+  "author": "james@sapia.ai",
+  "license": "ISC",
+  "dependencies": {
+    "serverless": "^3.38.0",
+    "serverless-offline": "^13.3.3",
+    "serverless-offline-aws-eventbridge": "2.1.0",
+    "fast-safe-stringify": "2.1.1"
+  },
+  "volta": {
+    "node": "20.11.0",
+    "npm": "10.2.3",
+    "pnpm": "8.15.5"
+  }
+}
