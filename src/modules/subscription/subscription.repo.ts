@@ -42,7 +42,7 @@ export class SubscriptionRepo {
   }
 
   async getSubscriptionById(id: string): Promise<ISubscription> {
-    return this.subscriptionModel.get({ PK: `${id}#v2` })
+    return this.subscriptionModel.get({ PK: id })
   }
 
   async getActiveSubscriptionById(id: string): Promise<ISubscription> {
@@ -50,7 +50,7 @@ export class SubscriptionRepo {
     return subscription?.archivedAt ? null : subscription
   }
 
-  async getPoliciesByIds(ids: string[]): Promise<ISubscription[]> {
+  async getSubscriptionsByIds(ids: string[]): Promise<ISubscription[]> {
     // this will only return non-null policies
     const subscriptionObjsArray = await this.subscriptionModel.batchGet(ids.map((id) => ({ PK: `${id}#v2` })))
 
@@ -60,8 +60,10 @@ export class SubscriptionRepo {
     return ids.map((id) => subscriptionObjs[`${id}#v2`] ?? null)
   }
 
-  async getActivePoliciesByIds(filterGetPoliciesByIds: IFilterGetSubscriptionsByIds): Promise<ISubscription[]> {
-    const policies = await this.getPoliciesByIds(filterGetPoliciesByIds.ids)
+  async getActiveSubscriptionsByIds(
+    filterGetSubscriptionsByIds: IFilterGetSubscriptionsByIds
+  ): Promise<ISubscription[]> {
+    const policies = await this.getSubscriptionsByIds(filterGetSubscriptionsByIds.ids)
     return policies.map((subscription) => {
       if (!subscription) {
         return subscription

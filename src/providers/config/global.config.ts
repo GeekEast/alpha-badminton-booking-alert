@@ -21,7 +21,7 @@ const IS_ONLINE = IS_DEV || IS_QA || IS_SANDBOX || IS_PRODUCT
 
 // graphql
 const GRAPHQL_PATH = `/api/${REGION}/graphql`
-const GQL_NAME_PREFIX = "LI"
+const GQL_NAME_PREFIX = "BBA"
 
 // logger
 const DEFAULT_LOG_LEVELS_STR = "log,warn,error,debug,verbose"
