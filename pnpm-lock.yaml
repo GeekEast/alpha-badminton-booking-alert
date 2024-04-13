@@ -59,6 +59,9 @@ dependencies:
   graphql-type-json:
     specifier: 0.3.2
     version: 0.3.2(graphql@16.8.1)
+  iterare:
+    specifier: ^1.2.1
+    version: 1.2.1
   lodash:
     specifier: 4.17.21
     version: 4.17.21
