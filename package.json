@@ -20,7 +20,7 @@
     "tdd": "pnpm test -- --watch",
     "e2e": "env-cmd -f .env.test jest --config ./jest/e2e.config.ts --forceExit  --runInBand --detectOpenHandles  --passWithNoTests --no-caches",
     "test:clean": "jest --clearCache",
-    "cmd": "zx ./scripts/cmd.mjs",
+    "cmd": "env-cmd -f .env.local zx ./scripts/cmd.mjs",
     "prepare": "husky || true"
   },
   "dependencies": {

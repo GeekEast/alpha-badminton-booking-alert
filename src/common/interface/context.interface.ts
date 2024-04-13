@@ -2,7 +2,6 @@ import { Request, Response } from "express"
 import { OutgoingHttpHeaders } from "http"
 
 import { DOMAIN_BRAND } from "../enum"
-import { TokenPayload } from "./tokenPayload.interface"
 
 export interface IContext {
   toJson(): Record<string, unknown>
@@ -36,17 +35,6 @@ export interface ResponseContext {
 export interface CookiesContext {
   cookies: Record<string, string>
   decryptedCookies: Record<string, string>
-}
-
-export interface TokenContext {
-  accessToken?: string
-  decodedAccessToken?: TokenPayload
-
-  refreshToken?: string
-  decodedRefreshToken?: TokenPayload
-
-  deviceToken?: string
-  decodedDeviceToken?: TokenPayload
 }
 
 export interface ExpressContext {
