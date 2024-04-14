@@ -1,4 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common"
+import { MailerService } from "@nestjs-modules/mailer"
 import * as dayjs from "dayjs"
 
 import { TimeSlotEntity } from "../crewler/entity/timeSlot.entity"
@@ -9,7 +10,10 @@ import { SubscriptionService } from "../subscription/subscription.service"
 export class NotificationService {
   logger = new Logger(NotificationService.name)
 
-  constructor(private readonly subscriptionService: SubscriptionService) {}
+  constructor(
+    private readonly subscriptionService: SubscriptionService,
+    private readonly mailerService: MailerService
+  ) {}
 
   async notifyViaEmail(subscription: SubscriptionEntity, timeSlots?: TimeSlotEntity[]) {
     // won't send email if user has disabled email notification
@@ -36,6 +40,13 @@ export class NotificationService {
       this.logger.log(
         `No available time slots for ${subscription.user.firstName} ${subscription.user.lastName} at ${subscription.user.email} between ${startAt}-${endAt} on court ${subscription.court}`
       )
+
+      await this.mailerService.sendMail({
+        to: subscription.user.email,
+        subject: "Your Badminton Monitor Alarm",
+        text: `No available time slots for ${subscription.user.firstName} ${subscription.user.lastName} between ${startAt}-${endAt} on court ${subscription.court}`
+      })
+
       await this.subscriptionService.updateSubscription(subscription, { lastEmailSentAt: currentTime.toDate() })
       return
     }
@@ -49,6 +60,11 @@ export class NotificationService {
     this.logger.log(
       `Sending email to ${subscription.user.firstName} ${subscription.user.lastName} at ${subscription.user.email} with available timeSlots:\n${formattedTimSlots.join("\n")}`
     )
+    await this.mailerService.sendMail({
+      to: subscription.user.email,
+      subject: "Your Badminton Monitor Alarm",
+      text: `Sending email to ${subscription.user.firstName} ${subscription.user.lastName} at ${subscription.user.email} with available timeSlots:\n${formattedTimSlots.join("\n")}`
+    })
     await this.subscriptionService.updateSubscription(subscription, { lastEmailSentAt: currentTime.toDate() })
   }
 }
