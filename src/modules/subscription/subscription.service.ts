@@ -62,11 +62,12 @@ export class SubscriptionService {
     )
   }
 
-  // async deleteSubscription(filter: FilterGetSubscriptionDto): Promise<string> {
-  //   return
-  // }
+  async archiveSubscription(filter: FilterGetSubscriptionDto): Promise<string> {
+    await this.subscriptionRepo.archiveSubscription(filter)
+    return filter.id
+  }
 
-  // async archiveSubscription(filter: FilterGetSubscriptionDto): Promise<string> {
+  // async deleteSubscription(filter: FilterGetSubscriptionDto): Promise<string> {
   //   return
   // }
 

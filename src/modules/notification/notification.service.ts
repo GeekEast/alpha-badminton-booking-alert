@@ -15,56 +15,49 @@ export class NotificationService {
     private readonly mailerService: MailerService
   ) {}
 
-  async notifyViaEmail(subscription: SubscriptionEntity, timeSlots?: TimeSlotEntity[]) {
+  async notify(subscription: SubscriptionEntity, timeSlots?: TimeSlotEntity[]) {
+    // won't send email if user has disabled email notification
+    if (subscription.archivedAt) {
+      return
+    }
+
+    // archive subscription if it has expired
+    const currentTime = dayjs.utc()
+    const expired = dayjs.utc(subscription.start).isSameOrBefore(currentTime)
+    if (expired) {
+      await this.subscriptionService.archiveSubscription({ id: subscription.id })
+      return
+    }
+
+    // nothing to notify if no timeSlots
+    if (!timeSlots || timeSlots.length === 0) {
+      return
+    }
+
+    await this.sendEmail(subscription, timeSlots)
+  }
+
+  async sendEmail(subscription: SubscriptionEntity, timeSlots: TimeSlotEntity[]) {
     // won't send email if user has disabled email notification
     if (!subscription.enableEmail) {
       return
     }
 
-    const currentTime = dayjs.utc()
-
-    // won't send email if user has already sent one within the interval
-    if (subscription.lastEmailSentAt) {
-      const lastEmailSentAt = dayjs.utc(subscription.lastEmailSentAt)
-      const nextEmailDeliveryDate = lastEmailSentAt.add(subscription.interval, "minutes")
-      const shouldSendEmail = currentTime.isSameOrAfter(nextEmailDeliveryDate)
-      if (!shouldSendEmail) {
-        return
-      }
-    }
-
-    if (!timeSlots || timeSlots.length === 0) {
-      const startAt = dayjs.tz(subscription.start, subscription.user.timezone).format("hh:mma")
-      const endAt = dayjs.tz(subscription.end, subscription.user.timezone).format("hh:mma")
-
-      this.logger.log(
-        `No available time slots for ${subscription.user.firstName} ${subscription.user.lastName} at ${subscription.user.email} between ${startAt}-${endAt} on court ${subscription.court}`
-      )
-
-      await this.mailerService.sendMail({
-        to: subscription.user.email,
-        subject: "Your Badminton Monitor Alarm",
-        text: `No available time slots for ${subscription.user.firstName} ${subscription.user.lastName} between ${startAt}-${endAt} on court ${subscription.court}`
-      })
-
-      await this.subscriptionService.updateSubscription(subscription, { lastEmailSentAt: currentTime.toDate() })
-      return
-    }
-
+    this.logger.log(
+      `Sending email to ${subscription.user.firstName} ${subscription.user.lastName} at ${subscription.user.email} with available timeSlots}`
+    )
     const formattedTimSlots = timeSlots.map((timeSlot) => {
       const startTime = dayjs.tz(timeSlot.start, subscription.user.timezone)
       const endTime = dayjs.tz(timeSlot.end, subscription.user.timezone)
       return `court ${timeSlot.court} available on ${startTime.date()}-${startTime.month() + 1}-${startTime.year()} ${startTime.format("hh:mma")}-${endTime.format("hh:mma")}`
     })
-
-    this.logger.log(
-      `Sending email to ${subscription.user.firstName} ${subscription.user.lastName} at ${subscription.user.email} with available timeSlots:\n${formattedTimSlots.join("\n")}`
-    )
     await this.mailerService.sendMail({
       to: subscription.user.email,
-      subject: "Your Badminton Monitor Alarm",
+      subject: "Your Badminton Booking Alert",
       text: `${formattedTimSlots.join("\n")}`
     })
-    await this.subscriptionService.updateSubscription(subscription, { lastEmailSentAt: currentTime.toDate() })
+
+    // disable email notification after sending email once
+    await this.subscriptionService.updateSubscription(subscription, { enableEmail: false })
   }
 }

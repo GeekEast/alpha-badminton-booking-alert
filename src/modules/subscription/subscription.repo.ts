@@ -57,12 +57,12 @@ export class SubscriptionRepo {
 
   async getSubscriptionsByIds(ids: string[]): Promise<ISubscription[]> {
     // this will only return non-null policies
-    const subscriptionObjsArray = await this.subscriptionModel.batchGet(ids.map((id) => ({ PK: `${id}#v2` })))
+    const subscriptionObjsArray = await this.subscriptionModel.batchGet(ids.map((id) => ({ PK: `${id}` })))
 
     // convert array to object
     const subscriptionObjs = keyBy(subscriptionObjsArray, "PK")
 
-    return ids.map((id) => subscriptionObjs[`${id}#v2`] ?? null)
+    return ids.map((id) => subscriptionObjs[`${id}`] ?? null)
   }
 
   async getActiveSubscriptionsByIds(
@@ -123,7 +123,7 @@ export class SubscriptionRepo {
     }
 
     const currentDate = new Date()
-    return this.subscriptionModel.update({ PK: `${filter.id}#v2` }, { updatedAt: currentDate, archivedAt: currentDate })
+    return this.subscriptionModel.update({ PK: `${filter.id}` }, { updatedAt: currentDate, archivedAt: currentDate })
   }
 
   async restoreSubscription(filter: IFilterGetSubscription): Promise<ISubscription> {
@@ -136,13 +136,13 @@ export class SubscriptionRepo {
     }
 
     const currentDate = new Date()
-    return this.subscriptionModel.update({ PK: `${filter.id}#v2` }, { updatedAt: currentDate, archivedAt: undefined })
+    return this.subscriptionModel.update({ PK: `${filter.id}` }, { updatedAt: currentDate, archivedAt: undefined })
   }
 
   async deleteSubscription(filter: IFilterGetSubscription): Promise<ISubscription> {
     const exist = await this.getSubscriptionById(filter.id)
     if (exist) {
-      await this.subscriptionModel.delete({ PK: `${filter.id}#v2` })
+      await this.subscriptionModel.delete({ PK: `${filter.id}` })
     }
     return exist
   }

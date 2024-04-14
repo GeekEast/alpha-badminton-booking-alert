@@ -46,6 +46,6 @@ export class SchedulerService {
         found.push(timeSlot)
       }
     }
-    this.notificationService.notifyViaEmail(subscription, found)
+    this.notificationService.notify(subscription, found)
   }
 }
