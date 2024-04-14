@@ -15,8 +15,8 @@ const items = [
     enableEmail: true,
     user: {
       firstName: "James",
-      lastName: "Tan",
-      email: "james@sapia.ai",
+      lastName: "Nod",
+      email: "james@example.ai",
       timezone: "Australia/Sydney"
     },
     tags: [],
