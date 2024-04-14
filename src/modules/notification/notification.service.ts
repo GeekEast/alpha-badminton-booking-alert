@@ -63,7 +63,7 @@ export class NotificationService {
     await this.mailerService.sendMail({
       to: subscription.user.email,
       subject: "Your Badminton Monitor Alarm",
-      text: `Sending email to ${subscription.user.firstName} ${subscription.user.lastName} at ${subscription.user.email} with available timeSlots:\n${formattedTimSlots.join("\n")}`
+      text: `${formattedTimSlots.join("\n")}`
     })
     await this.subscriptionService.updateSubscription(subscription, { lastEmailSentAt: currentTime.toDate() })
   }
