@@ -5,18 +5,18 @@ export const SubscriptionSchema = new Schema({
     hashKey: true,
     type: String
   },
-
-  start: Date,
-  end: Date,
+  start: { type: Date },
+  end: { type: Date },
   user: {
     type: Object,
     schema: {
       firstName: String,
       lastName: String,
-      email: String
+      email: String,
+      timezone: String
     }
   },
-
+  court: { type: String },
   tags: {
     type: Array,
     schema: [

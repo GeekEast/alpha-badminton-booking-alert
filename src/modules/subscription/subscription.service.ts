@@ -23,6 +23,7 @@ export class SubscriptionService {
       start: addSubscriptionDto.start,
       end: addSubscriptionDto.end,
       user: { ...addSubscriptionDto.user },
+      court: addSubscriptionDto.court,
       tags: addSubscriptionDto.tags
     })
 
@@ -45,8 +46,18 @@ export class SubscriptionService {
     return instantiate({ id: object.PK, ...object }, SubscriptionEntity)
   }
 
-  async getSubscriptions(filter: FilterGetSubscriptionsDto): Promise<SubscriptionEntity[]> {
-    return
+  async getActiveSubscriptions(_filter?: FilterGetSubscriptionsDto): Promise<SubscriptionEntity[]> {
+    const objects = await this.subscriptionRepo.getActiveSubscriptions()
+
+    return objects.map((object) =>
+      instantiate(
+        {
+          ...object,
+          id: object.PK
+        },
+        SubscriptionEntity
+      )
+    )
   }
 
   async archiveSubscription(filter: FilterGetSubscriptionDto): Promise<string> {

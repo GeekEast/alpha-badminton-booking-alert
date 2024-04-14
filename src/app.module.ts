@@ -9,7 +9,7 @@ import { AppController } from "./app.controller"
 import { generateApolloFederationConfig } from "./common/apollo/federation/generateApolloFederationConfig"
 import { initClsStoreInMiddleware } from "./common/cls/initClsStoreInMiddleware"
 import { generateDynamooseConfig } from "./common/dynamoose/generateDynamooseConfig"
-import { GraphQLModules, RestfulModules, ScheduleModules } from "./modules"
+import { GraphQLModules, RestfulModules, ServiceModules } from "./modules"
 import { GLOBAL_CONFIG_PROVIDER } from "./providers/config/global.config"
 import { ContextFactory } from "./providers/context/context.factory"
 import { GlobalModules, globalProviders } from "./providers/global.provider"
@@ -19,7 +19,7 @@ import { GlobalModules, globalProviders } from "./providers/global.provider"
     ...GlobalModules,
     ...GraphQLModules,
     ...RestfulModules,
-    ...ScheduleModules,
+    ...ServiceModules,
     GraphQLModule.forRootAsync<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
       useFactory: generateApolloFederationConfig,

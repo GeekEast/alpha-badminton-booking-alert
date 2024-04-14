@@ -15,12 +15,12 @@ export class SubscriptionEntity {
   id: string
 
   @Field()
-  @Transform(({ obj }) => fromAnyToDateOrUndefined(obj.createdAt))
+  @Transform(({ obj }) => fromAnyToDateOrUndefined(obj.start))
   @Expose()
   start: Date
 
   @Field()
-  @Transform(({ obj }) => fromAnyToDateOrUndefined(obj.createdAt))
+  @Transform(({ obj }) => fromAnyToDateOrUndefined(obj.end))
   @Expose()
   end: Date
 
@@ -28,6 +28,12 @@ export class SubscriptionEntity {
   @Type(() => UserEntity)
   @Expose()
   user: UserEntity
+
+  @Field()
+  // just for readability
+  // @IsEnum(COURT_ENUM)
+  @Expose()
+  court: string
 
   @Field()
   @Transform(({ obj }) => fromAnyToDateOrUndefined(obj.createdAt))

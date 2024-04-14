@@ -1,4 +1,5 @@
 import { ForbiddenException, Injectable } from "@nestjs/common"
+import * as dayjs from "dayjs"
 import { keyBy, pickBy } from "lodash"
 import { InjectModel, Model } from "nestjs-dynamoose"
 
@@ -33,6 +34,7 @@ export class SubscriptionRepo {
       start: subscriptionToCreate.start,
       end: subscriptionToCreate.end,
       user: subscriptionToCreate.user,
+      court: subscriptionToCreate.court,
       tags: subscriptionToCreate.tags.map((tag) => ({ ...tag })),
       createdAt: currentDate,
       updatedAt: currentDate
@@ -139,5 +141,20 @@ export class SubscriptionRepo {
       await this.subscriptionModel.delete({ PK: `${filter.id}#v2` })
     }
     return exist
+  }
+
+  async getActiveSubscriptions(): Promise<ISubscription[]> {
+    const currTime = dayjs().valueOf()
+    const result = await this.subscriptionModel
+      .scan("start")
+      .gt(currTime)
+      .where("end")
+      .gt(currTime)
+      .where("archivedAt")
+      .not()
+      .exists()
+      .all()
+      .exec()
+    return result.map((r) => r.toJSON() as ISubscription)
   }
 }

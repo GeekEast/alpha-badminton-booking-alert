@@ -9,6 +9,7 @@ export interface ISubscription extends ISubscriptionKey, ITaggable {
   start: Date
   end: Date
   user: IUser
+  court?: string
   createdAt: Date
   updatedAt: Date
   archivedAt?: Date
@@ -19,6 +20,7 @@ export interface ICreateSubscription extends ITaggable {
   start: Date
   end: Date
   user: IUser
+  court?: string
 }
 
 export interface IFilterGetSubscription {
@@ -28,6 +30,7 @@ export interface IUpdateSubscription extends ITaggable {
   start?: Date
   end?: Date
   user?: IUser
+  court?: string
 }
 
 export interface IFilterGetSubscriptionsByIds {

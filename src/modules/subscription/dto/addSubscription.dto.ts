@@ -1,26 +1,63 @@
 import { Field, InputType } from "@nestjs/graphql"
 import { Expose, Transform, Type } from "class-transformer"
-import { ArrayMaxSize, IsDate, ValidateNested } from "class-validator"
+import { ArrayMaxSize, IsEnum, IsNumber, IsOptional, Max, Min, ValidateNested } from "class-validator"
+import * as dayjs from "dayjs"
 
 import { TagDto } from "../../../common/dto/tag.dto"
 import { buildGqlNameWithPrefix } from "../../../common/utils/buildGqlName.util"
+import { COURT_ENUM } from "../enum/court.enum"
 import { AddUserDto } from "./addUser.dto"
 
 @InputType(buildGqlNameWithPrefix("AddSubscriptionDto"))
 export class AddSubscriptionDto {
   @Field()
-  @Transform(({ obj }) => {
-    return new Date(obj.start)
+  @IsNumber()
+  @Min(dayjs().year())
+  @Max(9999)
+  @Expose()
+  year: number
+
+  @Field()
+  @IsNumber()
+  @Min(1)
+  @Max(12)
+  @Expose()
+  month: number
+
+  @Field()
+  @IsNumber()
+  @Min(1)
+  @Max(31)
+  @Expose()
+  day: number
+
+  @Field()
+  @IsNumber()
+  @Min(0)
+  @Max(23)
+  @Expose()
+  startHour: number
+
+  @Field()
+  @IsNumber()
+  @Min(0)
+  @Max(23)
+  @Expose()
+  endHour: number
+
+  @Transform(({ obj }: { obj: AddSubscriptionDto }) => {
+    const timeStr = `${obj.year}-${obj.month}-${obj.day} ${obj.startHour}`
+    const timeFormat = "YYYY-M-D H"
+    return dayjs.tz(timeStr, timeFormat, obj.user.timezone).toDate()
   })
-  @IsDate()
   @Expose()
   start: Date
 
-  @Field()
-  @Transform(({ obj }) => {
-    return new Date(obj.start)
+  @Transform(({ obj }: { obj: AddSubscriptionDto }) => {
+    const timeStr = `${obj.year}-${obj.month}-${obj.day} ${obj.endHour}`
+    const timeFormat = "YYYY-M-D H"
+    return dayjs.tz(timeStr, timeFormat, obj.user.timezone).toDate()
   })
-  @IsDate()
   @Expose()
   end: Date
 
@@ -29,6 +66,12 @@ export class AddSubscriptionDto {
   @Type(() => AddUserDto)
   @Expose()
   user: AddUserDto
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsEnum(COURT_ENUM)
+  @Expose()
+  court?: string
 
   @Field(() => [TagDto], { nullable: true })
   @Transform(({ obj }) => obj.tags ?? [])

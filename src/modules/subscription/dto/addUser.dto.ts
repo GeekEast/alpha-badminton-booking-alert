@@ -1,6 +1,6 @@
 import { Field, InputType } from "@nestjs/graphql"
 import { Expose } from "class-transformer"
-import { IsEmail, MaxLength } from "class-validator"
+import { IsEmail, IsTimeZone, MaxLength } from "class-validator"
 
 import { buildGqlNameWithPrefix } from "../../../common/utils/buildGqlName.util"
 
@@ -20,4 +20,9 @@ export class AddUserDto {
   @IsEmail()
   @Expose()
   email: string
+
+  @Field()
+  @IsTimeZone()
+  @Expose()
+  timezone: string
 }

@@ -1,5 +1,11 @@
 import { Logger } from "@nestjs/common"
 import { NestFactory } from "@nestjs/core"
+import * as dayjs from "dayjs"
+import * as customParseFormat from "dayjs/plugin/customParseFormat"
+import * as isSameOrAfter from "dayjs/plugin/isSameOrAfter"
+import * as isSameOrBefore from "dayjs/plugin/isSameOrBefore"
+import * as timezone from "dayjs/plugin/timezone"
+import * as utc from "dayjs/plugin/utc"
 
 import { AppModule } from "./app.module"
 import { cors } from "./common/security/cors.sec"
@@ -9,6 +15,12 @@ import { GLOBAL_CONFIG, GLOBAL_CONFIG_PROVIDER } from "./providers/config/global
 
 async function bootstrap() {
   monitorNodeUnhandledError()
+
+  dayjs.extend(customParseFormat)
+  dayjs.extend(utc)
+  dayjs.extend(timezone)
+  dayjs.extend(isSameOrBefore)
+  dayjs.extend(isSameOrAfter)
 
   const app = await NestFactory.create(AppModule, {
     cors,
