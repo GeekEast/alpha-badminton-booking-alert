@@ -1,6 +1,20 @@
 # Badminton Booking Alarm
 
 
+## Set Gmail SMTP
+- enable `IMAP` in Gmail Settings
+- enable 2FA password
+- create app password 
+```sh
+cp .env.example .env.local
+
+# update SMTP
+SMTP_HOST="smtp.gmail.com"
+SMTP_USER=<YOUR_EMAIL>
+SMTP_PASS=<APP_PASSWORD>
+```
+
+
 ## Install
 ```sh
 pnpm install
