@@ -10,6 +10,10 @@ export interface ISubscription extends ISubscriptionKey, ITaggable {
   end: Date
   user: IUser
   court?: string
+  enableEmail: boolean
+  // in minutes
+  interval: number
+  lastEmailSentAt?: Date
   createdAt: Date
   updatedAt: Date
   archivedAt?: Date
@@ -21,6 +25,9 @@ export interface ICreateSubscription extends ITaggable {
   end: Date
   user: IUser
   court?: string
+  // in minutes
+  interval: number
+  enableEmail: boolean
 }
 
 export interface IFilterGetSubscription {
@@ -31,6 +38,10 @@ export interface IUpdateSubscription extends ITaggable {
   end?: Date
   user?: IUser
   court?: string
+  enableEmail?: boolean
+  // in minutes
+  interval?: number
+  lastEmailSentAt?: Date
 }
 
 export interface IFilterGetSubscriptionsByIds {

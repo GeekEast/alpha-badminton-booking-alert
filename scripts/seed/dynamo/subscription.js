@@ -17,6 +17,7 @@ const items = [
       email: "james@sapia.ai",
       timezone: "Australia/Sydney"
     },
+    interval: 30,
     tags: [],
     updatedAt: 1713081218738
   }

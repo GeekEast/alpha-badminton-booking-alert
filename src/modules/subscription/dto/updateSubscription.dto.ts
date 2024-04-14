@@ -1,43 +1,42 @@
 import { Field, InputType } from "@nestjs/graphql"
-import { Expose, Transform, Type } from "class-transformer"
-import { ArrayMaxSize, IsDate, IsOptional, ValidateNested } from "class-validator"
+import { Expose, Type } from "class-transformer"
+import { ArrayMaxSize, IsBoolean, IsEnum, IsOptional, Max, Min, ValidateNested } from "class-validator"
 
 import { TagDto } from "../../../common/dto/tag.dto"
 import { buildGqlNameWithPrefix } from "../../../common/utils/buildGqlName.util"
-import { AddUserDto } from "./addUser.dto"
+import { COURT_ENUM } from "../enum/court.enum"
 
 @InputType(buildGqlNameWithPrefix("UpdateSubscriptionDto"))
 export class UpdateSubscriptionDto {
   @Field({ nullable: true })
   @IsOptional()
-  @Transform(({ obj }) => {
-    return new Date(obj.start)
-  })
-  @IsDate()
+  @IsEnum(COURT_ENUM)
   @Expose()
-  start?: string
+  court?: string
 
   @Field({ nullable: true })
   @IsOptional()
-  @Transform(({ obj }) => {
-    return new Date(obj.start)
-  })
-  @IsDate()
+  @IsBoolean()
   @Expose()
-  end?: string
+  enableEmail?: boolean
 
-  @Field(() => AddUserDto, { nullable: true })
+  @Field({ nullable: true })
   @IsOptional()
-  @ValidateNested()
-  @Type(() => AddUserDto)
+  @Min(15)
+  @Max(24 * 7 * 60)
   @Expose()
-  user?: AddUserDto
+  interval?: number
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @Expose()
+  lastEmailSentAt?: Date
 
   @Field(() => [TagDto], { nullable: true })
-  @Transform(({ obj }) => obj.tags ?? [])
+  @IsOptional()
   @ArrayMaxSize(200)
   @ValidateNested({ each: true })
   @Type(() => TagDto)
   @Expose()
-  tags: TagDto[]
+  tags?: TagDto[]
 }

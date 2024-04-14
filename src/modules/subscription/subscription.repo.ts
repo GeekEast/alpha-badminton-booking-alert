@@ -21,6 +21,7 @@ export class SubscriptionRepo {
 
   async createSubscription(subscriptionToCreate: ICreateSubscription): Promise<ISubscription> {
     const existSubscription: ISubscription = await this.getSubscriptionById(`${subscriptionToCreate.id}`)
+
     if (existSubscription && !existSubscription.archivedAt) {
       throw new ForbiddenException(`subscription exists (active)`)
     }
@@ -35,6 +36,8 @@ export class SubscriptionRepo {
       end: subscriptionToCreate.end,
       user: subscriptionToCreate.user,
       court: subscriptionToCreate.court,
+      enableEmail: subscriptionToCreate.enableEmail,
+      interval: subscriptionToCreate.interval,
       tags: subscriptionToCreate.tags.map((tag) => ({ ...tag })),
       createdAt: currentDate,
       updatedAt: currentDate
@@ -84,14 +87,15 @@ export class SubscriptionRepo {
   ): Promise<{ updated: ISubscription; fieldsUpdated: Partial<ISubscription> }> {
     const currentDate = new Date()
     const subscriptionToUpdate: IUpdateSubscription = {
-      start: update.start,
-      end: update.end,
-      user: update.user,
+      court: update.court,
+      enableEmail: update.enableEmail,
+      interval: update.interval,
+      lastEmailSentAt: update.lastEmailSentAt,
       tags: update.tags && update.tags.map((tag) => ({ ...tag }))
     }
     const condensedSubscriptionToUpdate = pickBy(subscriptionToUpdate, (val) => val !== null && val !== undefined)
     const fieldsToUpdate = { ...condensedSubscriptionToUpdate, updatedAt: currentDate }
-    const updated = await this.subscriptionModel.update({ PK: `${filter.id}#v2` }, fieldsToUpdate)
+    const updated = await this.subscriptionModel.update({ PK: `${filter.id}` }, fieldsToUpdate)
     return { updated, fieldsUpdated: fieldsToUpdate }
   }
 

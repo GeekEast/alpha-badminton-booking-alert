@@ -7,6 +7,7 @@ export const SubscriptionSchema = new Schema({
   },
   start: { type: Date },
   end: { type: Date },
+  lastEmailSentAt: Date,
   user: {
     type: Object,
     schema: {
@@ -16,7 +17,9 @@ export const SubscriptionSchema = new Schema({
       timezone: String
     }
   },
+  enableEmail: { type: Boolean },
   court: { type: String },
+  interval: Number,
   tags: {
     type: Array,
     schema: [

@@ -24,6 +24,8 @@ export class SubscriptionService {
       end: addSubscriptionDto.end,
       user: { ...addSubscriptionDto.user },
       court: addSubscriptionDto.court,
+      enableEmail: addSubscriptionDto.enableEmail,
+      interval: addSubscriptionDto.interval,
       tags: addSubscriptionDto.tags
     })
 
@@ -34,11 +36,11 @@ export class SubscriptionService {
     filterUpdateSubscriptionDto: FilterGetSubscriptionDto,
     updateSubscriptionDto: UpdateSubscriptionDto
   ): Promise<SubscriptionEntity> {
-    return
-  }
-
-  async deleteSubscription(filter: FilterGetSubscriptionDto): Promise<string> {
-    return
+    const response = await this.subscriptionRepo.updateActiveSubscriptionById(
+      filterUpdateSubscriptionDto.id,
+      updateSubscriptionDto
+    )
+    return instantiate({ ...response.updated, id: response.updated.PK }, SubscriptionEntity)
   }
 
   async getSubscription(filter: FilterGetSubscriptionDto): Promise<SubscriptionEntity> {
@@ -60,11 +62,15 @@ export class SubscriptionService {
     )
   }
 
-  async archiveSubscription(filter: FilterGetSubscriptionDto): Promise<string> {
-    return
-  }
+  // async deleteSubscription(filter: FilterGetSubscriptionDto): Promise<string> {
+  //   return
+  // }
 
-  async restoreSubscription(filter: FilterGetSubscriptionDto): Promise<string> {
-    return
-  }
+  // async archiveSubscription(filter: FilterGetSubscriptionDto): Promise<string> {
+  //   return
+  // }
+
+  // async restoreSubscription(filter: FilterGetSubscriptionDto): Promise<string> {
+  //   return
+  // }
 }

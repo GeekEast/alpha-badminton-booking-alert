@@ -36,6 +36,19 @@ export class SubscriptionEntity {
   court: string
 
   @Field()
+  @Expose()
+  enableEmail: boolean
+
+  @Field({ nullable: true })
+  @Transform(({ obj }) => fromAnyToDateOrUndefined(obj.lastEmailSentAt))
+  @Expose()
+  lastEmailSentAt: Date
+
+  @Field()
+  @Expose()
+  interval: number
+
+  @Field()
   @Transform(({ obj }) => fromAnyToDateOrUndefined(obj.createdAt))
   @Expose()
   createdAt: Date

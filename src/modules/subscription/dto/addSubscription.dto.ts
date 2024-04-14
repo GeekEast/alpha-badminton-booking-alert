@@ -1,6 +1,6 @@
 import { Field, InputType } from "@nestjs/graphql"
 import { Expose, Transform, Type } from "class-transformer"
-import { ArrayMaxSize, IsEnum, IsNumber, IsOptional, Max, Min, ValidateNested } from "class-validator"
+import { ArrayMaxSize, IsBoolean, IsEnum, IsNumber, IsOptional, Max, Min, ValidateNested } from "class-validator"
 import * as dayjs from "dayjs"
 
 import { TagDto } from "../../../common/dto/tag.dto"
@@ -72,6 +72,19 @@ export class AddSubscriptionDto {
   @IsEnum(COURT_ENUM)
   @Expose()
   court?: string
+
+  @Field()
+  @Transform(({ obj }) => obj.enableEmail ?? true)
+  @IsBoolean()
+  @Expose()
+  enableEmail: boolean
+
+  @Field({ nullable: true })
+  @Transform(({ obj }) => obj.interval ?? 30)
+  @Min(15)
+  @Max(24 * 7 * 60)
+  @Expose()
+  interval: number
 
   @Field(() => [TagDto], { nullable: true })
   @Transform(({ obj }) => obj.tags ?? [])
