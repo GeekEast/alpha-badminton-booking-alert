@@ -6,20 +6,21 @@ const tableName = process.env["DYNAMODB_SUBSCRIPTION_TABLE_NAME"]
 // define seed data here
 const items = [
   {
-    createdAt: 1713081218738,
+    createdAt: 1713086557413,
     start: 1713427200000,
     end: 1713445200000,
-    PK: "3ff37f46-35ec-4333-b217-c37a4f3bdcdd",
+    interval: 1,
+    PK: "332a12b7-d822-4beb-9edf-51943929e288",
     court: "18",
+    enableEmail: true,
     user: {
       firstName: "James",
       lastName: "Tan",
       email: "james@sapia.ai",
       timezone: "Australia/Sydney"
     },
-    interval: 30,
     tags: [],
-    updatedAt: 1713081218738
+    updatedAt: 1713087770443
   }
 ]
 
