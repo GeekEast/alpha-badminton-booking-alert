@@ -6,6 +6,9 @@
 - enable 2FA password
 - create app password 
 ```sh
+# for docker
+cp .env.example .env.docker
+# for host
 cp .env.example .env.local
 
 # update SMTP
@@ -14,9 +17,14 @@ SMTP_USER=<YOUR_EMAIL>
 SMTP_PASS=<APP_PASSWORD>
 ```
 
+## Run In Docker
+```
+pnpm install
+pnpm cmd up
+```
 
-## Install
-```sh
+## Run In Host
+```
 pnpm install
 pnpm dev
 ```

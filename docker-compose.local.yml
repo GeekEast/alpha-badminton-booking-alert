@@ -5,15 +5,7 @@ services:
   badminton-booking-alarm-dynamodb-local:
     image: amazon/dynamodb-local
     container_name: badminton-booking-alarm-dynamodb-local
-    command:
-      [
-        "-jar",
-        "DynamoDBLocal.jar",
-        "-sharedDb",
-        "-optimizeDbBeforeStartup",
-        "-dbPath",
-        "/data/dynamodb"
-      ]
+    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-optimizeDbBeforeStartup", "-dbPath", "/data/dynamodb"]
     volumes:
       - ./data/dynamodb:/data/dynamodb
     ports:
@@ -41,3 +33,16 @@ services:
       context: ./infra/eventBridge
     ports:
       - 5618:5208
+
+  badminton-booking-alarm-booking-service:
+    image: badminton-booking-alarm-booking-service
+    container_name: badminton-booking-alarm-booking-service
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    env_file:
+      - .env.docker
+    volumes:
+      - ~/.aws/:/root/.aws/
+    ports:
+      - 3000:8194

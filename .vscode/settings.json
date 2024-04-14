@@ -11,6 +11,7 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "files.associations": {
     "*.env.local": "env",
+    "*.env.docker": "env",
     "*.env.qa": "env",
     "*.env.sandbox": "env",
     "*.env.product": "env",
