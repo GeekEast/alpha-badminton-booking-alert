@@ -29,11 +29,11 @@ export class SubscriptionEntity {
   @Expose()
   user: UserEntity
 
-  @Field()
+  @Field({ nullable: true })
   // just for readability
   // @IsEnum(COURT_ENUM)
   @Expose()
-  court: string
+  court?: string
 
   @Field()
   @Expose()

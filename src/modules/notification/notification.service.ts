@@ -31,6 +31,7 @@ export class NotificationService {
 
     // nothing to notify if no timeSlots
     if (!timeSlots || timeSlots.length === 0) {
+      this.logger.log(`No available timeSlots for ${subscription.user.firstName} ${subscription.user.lastName}`)
       return
     }
 
@@ -54,7 +55,7 @@ export class NotificationService {
     await this.mailerService.sendMail({
       to: subscription.user.email,
       subject: "Your Badminton Booking Alert",
-      text: `${formattedTimSlots.join("\n")}`
+      text: `Hi ${subscription.user.firstName}, we've found:\n${formattedTimSlots.join("\n")}`
     })
 
     // disable email notification after sending email once

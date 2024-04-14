@@ -17,7 +17,7 @@ export class SchedulerService {
     private readonly notificationService: NotificationService
   ) {}
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_5_MINUTES)
   async scanSubscriptions() {
     const subscriptions = await this.subscriptionService.getActiveSubscriptions()
     for (const subscription of subscriptions) {
